@@ -24,7 +24,7 @@ public class CsVParser {
         try {
             parser = CSVParser.parse(csvData, Charset.defaultCharset(), CSVFormat.DEFAULT);
             iterator = parser.iterator();
-            //System.out.println(parser.getRecords().get(0).size());
+            //System.out.println("Parser size: " + parser.getRecords().get(0).size());
         } catch (IOException e) {
             System.out.println("No CSV file found in "+FilePath);
         }

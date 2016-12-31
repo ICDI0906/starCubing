@@ -50,7 +50,7 @@ public class TableTuple {
     }
 
     public void printHash() {
-        System.out.println(tuple.toString() + " " + tuple.toString().hashCode());
+        System.out.println("Tuple: "+ tuple.toString() + " " + tuple.toString().hashCode());
     }
 
     public int hashCode() {

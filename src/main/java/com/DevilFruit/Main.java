@@ -21,11 +21,11 @@ public class Main {
      * arg[0] absolute file path
      * arg[1] number of attributes. i.e number of dimen
      */
-    private static boolean logResults = false;
+    private static boolean logResults = true;
 
     public static void main(String[] args) {
         // Parse CSV file and add to Table
-        File csvFile = new File(args[0]);
+        File csvFile = new File("data/DressSales.csv");
         Instant start = Instant.now();
         System.out.print("Parsing " + csvFile.getName() + "...");
         CsVParser myParser = new CsVParser(csvFile.getAbsolutePath());
@@ -39,7 +39,7 @@ public class Main {
         start = Instant.now();
         System.out.print("Creating a list of startables by dimension...");
         List<StarTable> starTables = new ArrayList<StarTable>();
-        min_sup = Integer.parseInt(args[1]);
+        min_sup = Integer.parseInt("5"); // args[1]
 
         List<String> orderedDimen = new ArrayList<String>(baseCuboidTable.key.tuplet);
         Collections.copy(orderedDimen, baseCuboidTable.key.tuplet);
@@ -151,13 +151,13 @@ public class Main {
                 // output cnode.count
                 List<String> attrAggregate = new ArrayList<String>();
                 aggregateAttr(cnode, attrAggregate);
-                System.out.println(attrAggregate + "/" + cnode.count + "/" + t.cuboidTreeCuboidNode.aggregate);
+                System.out.println("Aggregate:" + attrAggregate + "/" + cnode.count + "/" + t.cuboidTreeCuboidNode.aggregate);
 
             } else if (cnode.isLeaf() && logResults) {
                 // output cnode.count
                 List<String> attrAggregate = new ArrayList<String>();
                 aggregateAttr(cnode, attrAggregate);
-                System.out.println(attrAggregate + "/" + cnode.count + t.cuboidTreeCuboidNode.aggregate);
+                System.out.println("Aggregate: " + attrAggregate + "/" + cnode.count + t.cuboidTreeCuboidNode.aggregate);
 
             }
             if (!cnode.isLeaf()) {//initiate a new cuboid tree,
