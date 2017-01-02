@@ -10,6 +10,7 @@ import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,9 +26,9 @@ public class Main {
 
     public static void main(String[] args) {
         // Parse CSV file and add to Table
-        File csvFile = new File("data/DressSales.csv");
+        File csvFile = new File("data/BaseCuboid.csv");
         Instant start = Instant.now();
-        System.out.print("Parsing " + csvFile.getName() + "...");
+        System.out.println("Parsing " + csvFile.getName() + "...");
         CsVParser myParser = new CsVParser(csvFile.getAbsolutePath());
         Table baseCuboidTable = new Table();
         baseCuboidTable.populate(myParser);
@@ -37,9 +38,9 @@ public class Main {
         //Perform star reduction to create a compressed base table
         //1. create a star table (hash table) for each dimension
         start = Instant.now();
-        System.out.print("Creating a list of startables by dimension...");
+        System.out.println("Creating a list of startables by dimension...");
         List<StarTable> starTables = new ArrayList<StarTable>();
-        min_sup = Integer.parseInt("5"); // args[1]
+        min_sup = Integer.parseInt("2"); // args[1]
 
         List<String> orderedDimen = new ArrayList<String>(baseCuboidTable.key.tuplet);
         Collections.copy(orderedDimen, baseCuboidTable.key.tuplet);
@@ -49,12 +50,18 @@ public class Main {
             StarTable starTable = new StarTable(orderedDimen.get(i) /*baseCuboidTable.key.get(i)*/);
             starTable = baseCuboidTable.getStarTable(starTable.dimension, min_sup);
             starTables.add(starTable);
+            //System.out.println("StarTable: "+ starTable.dimension + " " + Arrays.toString(starTable.starTable.entrySet().toArray()));
         }
+        
+        for (int i = 0; i < starTables.size(); i++) {
+            System.out.println("Star Table: " + starTables.get(i).dimension.toString());
+            starTables.toString();
+        }        
         System.out.println("Done");
 
 
         //2. Generate compressed star table
-        System.out.print("Compressing base table...");
+        System.out.println("Compressing base table...");
         //scan table again TODO clone baseCuboidTable instead
         CsVParser myParser2 = new CsVParser(csvFile.getAbsolutePath());
         Table compressedBaseTable = new Table();
@@ -69,10 +76,11 @@ public class Main {
         Tree baseStarTree = new Tree();
         baseStarTree.createStarTree(compressedBaseTable);
         baseStarTree.root.count = baseCuboidTable.table.size();
+        System.out.println("root.count: " + baseStarTree.root.count );
         System.out.println("Done");
 
         //Create Cuboid Tree
-        System.out.print("Creating cuboidTree...");
+        System.out.println("Creating cuboidTree...");
         CuboidTree cuboidTree = new CuboidTree(compressedBaseTable.key.tuplet);
 
         //linking the root node of cuboid tree to root of Base Star tree
@@ -82,11 +90,13 @@ public class Main {
         System.out.println("Done");
         //call starcubing
 
-        System.out.print("Star Cubing...");
+        System.out.println("Star Cubing...");
         starCubing(baseStarTree, baseStarTree.root);
         Instant end = Instant.now();
         System.out.println("Done: " + Duration.between(start, end));
 
+        System.out.println( "baseStartree: " + baseStarTree.cuboidTreeCuboidNode.toString());
+        
     }
 
     /**
@@ -151,13 +161,13 @@ public class Main {
                 // output cnode.count
                 List<String> attrAggregate = new ArrayList<String>();
                 aggregateAttr(cnode, attrAggregate);
-                System.out.println("Aggregate:" + attrAggregate + "/" + cnode.count + "/" + t.cuboidTreeCuboidNode.aggregate);
+                System.out.println("Aggregate:" + attrAggregate + "/" + "count: <" + cnode.count+ ">" + "/" + t.cuboidTreeCuboidNode.aggregate);
 
             } else if (cnode.isLeaf() && logResults) {
                 // output cnode.count
                 List<String> attrAggregate = new ArrayList<String>();
                 aggregateAttr(cnode, attrAggregate);
-                System.out.println("Aggregate: " + attrAggregate + "/" + cnode.count + t.cuboidTreeCuboidNode.aggregate);
+                System.out.println("Leaf Aggregate: " + attrAggregate + "/" + "count: <" + cnode.count+ ">" + t.cuboidTreeCuboidNode.aggregate);
 
             }
             if (!cnode.isLeaf()) {//initiate a new cuboid tree,

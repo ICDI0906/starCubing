@@ -1,5 +1,6 @@
 package Tables;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,6 +11,18 @@ public class StarTable {
     public String dimension;
     Map<String, Integer> starTable;
 
+    @Override
+    public String toString() {
+    Iterator<Map.Entry<String, Integer>> entries = starTable.entrySet().iterator();
+    while (entries.hasNext()) {
+      Map.Entry<String, Integer> entry = entries.next();
+      String key = entry.getKey();
+      Integer value = entry.getValue();
+      System.out.println("Key: " + key + ", Value: " + value);
+    }
+        return null;
+    }
+    
     public StarTable(String dimen) {
         starTable = new TreeMap<String, Integer>();
         this.dimension = dimen;

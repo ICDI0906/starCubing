@@ -33,25 +33,29 @@ public class Table {
     }
 
     public void populate(CsVParser parser) {
-        key.add(parser.next());
-
+        key.add(parser.next()); // Add next record to key (tuple Object)
+        System.out.println("Key population: " + key.toString());
         List<String> oldOrder = new ArrayList<String>(key.tuplet);
 
-        Collections.sort(key.tuplet);
-
+        Collections.sort(key.tuplet); // Sort dimensions(alphabetically?)
+        System.out.println("Key population (alpahbetically ordered): " + key.tuplet.toString());
+        
+        
         int[] sortHelper = new int[key.tuplet.size()];//stores the new location of this dimension
         for (String dimen : oldOrder
                 ) {
             sortHelper[oldOrder.indexOf(dimen)] = key.tuplet.indexOf(dimen);
         }
-
+        System.out.println("baseCuboidTable (Ordered Tuples...)"); // Ordered tuples
         while (parser.hasNext()) {
             TableTuple newRow = new TableTuple(parser.next(), sortHelper);
             table.add(newRow);
             newRow.increment();//make count to 1
-
+            
+            System.out.println("Tuple: " + newRow.tuple.toString() + "->" + newRow.getCount());
+            // newRow.printHash();
         }
-
+        System.out.println("Done baseCuboidTable (Ordered Tuples...)"); // Ordered tuples
     }
 
     public StarTable getStarTable(String dimension, int min_sup) {
@@ -80,7 +84,7 @@ public class Table {
         List<TableTuple> newtable = new ArrayList<TableTuple>(uniqueSet);
         for (TableTuple tt : uniqueSet) {
             newtable.get(newtable.indexOf(tt)).setCount(Collections.frequency(table, tt));
-
+            System.out.println("Compressed tuple" + tt.tuple.tuplet);
         }
         return newtable;
     }

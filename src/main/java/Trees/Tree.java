@@ -16,7 +16,7 @@ public class Tree {
         root = new Node();
         root.attribute = "+root";
     }
-
+    
     public void createStarTree(Table compressedBaseTable) {
         String attr = "";
         String dimen = "";
@@ -33,7 +33,7 @@ public class Tree {
                 temp.dimension = dimen;
                 int index = ptr.children.indexOf(temp);
 
-                //ptr.count = rowCount + ptr.count;
+                ptr.count = rowCount + ptr.count;
 
                 if (index < 0) {//add node to child
 

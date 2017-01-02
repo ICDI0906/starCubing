@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class Tuple {
     public List<String> tuplet = null;
+    
+    
 
     public Tuple() {
         tuplet = new LinkedList<String>();
