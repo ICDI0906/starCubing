@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class TableTuple {
     public Tuple tuple;
-    private int count;
+    private int tupleCount;
 
     public TableTuple(List<String> values, int[] sortHelper) {
         tuple = new Tuple(values);
@@ -16,12 +16,12 @@ public class TableTuple {
                 tuple.tuplet.set(sortHelper[i], values.get(i));
             }
         }
-        count = 0;
+        tupleCount = 0;
     }
 
     public TableTuple(Tuple tup) {
         tuple = tup;
-        count = 0;
+        tupleCount = 0;
     }
 
     public void star(int i, String s) {
@@ -29,16 +29,16 @@ public class TableTuple {
     }
 
     public int increment() {
-        count++;
-        return count;
+        tupleCount++;
+        return tupleCount;
     }
 
-    public int getCount() {
-        return count;
+    public int getTupleCount() {
+        return tupleCount;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setTupleCount(int tupleCount) {
+        this.tupleCount = tupleCount;
     }
 
     public String get(int index) {

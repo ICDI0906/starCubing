@@ -22,7 +22,7 @@ public class Tree {
         String dimen = "";
         for (int i = 0; i < compressedBaseTable.table.size(); i++) {
             Node ptr = root;
-            int rowCount = compressedBaseTable.table.get(i).getCount();
+            int rowCount = compressedBaseTable.table.get(i).getTupleCount();
             root.count += rowCount;
 
             for (int j = 0; j < compressedBaseTable.key.size(); j++) {

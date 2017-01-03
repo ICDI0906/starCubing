@@ -10,27 +10,27 @@ import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Main {
-    public static int min_sup;
+    public static int min_iceberg;
     /**
      * @param args contains information about the data being processed
      * arg[0] absolute file path
-     * arg[1] number of attributes. i.e number of dimen
+     * arg[1] min iceberg criteria
      */
     private static boolean logResults = true;
 
     public static void main(String[] args) {
         // Parse CSV file and add to Table
         File csvFile = new File("data/BaseCuboid.csv");
-        Instant start = Instant.now();
+        Instant start;
         System.out.println("Parsing " + csvFile.getName() + "...");
         CsVParser myParser = new CsVParser(csvFile.getAbsolutePath());
-        Table baseCuboidTable = new Table();
+        Table baseCuboidTable;
+        baseCuboidTable = new Table();
         baseCuboidTable.populate(myParser);
         System.out.println("Done");
 
@@ -40,7 +40,7 @@ public class Main {
         start = Instant.now();
         System.out.println("Creating a list of startables by dimension...");
         List<StarTable> starTables = new ArrayList<StarTable>();
-        min_sup = Integer.parseInt("2"); // args[1]
+        min_iceberg = Integer.parseInt("2"); // args[1]
 
         List<String> orderedDimen = new ArrayList<String>(baseCuboidTable.key.tuplet);
         Collections.copy(orderedDimen, baseCuboidTable.key.tuplet);
@@ -48,7 +48,7 @@ public class Main {
 
         for (int i = 0; i < orderedDimen.size()/*baseCuboidTable.key.size()*/; i++) {
             StarTable starTable = new StarTable(orderedDimen.get(i) /*baseCuboidTable.key.get(i)*/);
-            starTable = baseCuboidTable.getStarTable(starTable.dimension, min_sup);
+            starTable = baseCuboidTable.getStarTable(starTable.dimension, min_iceberg);
             starTables.add(starTable);
             //System.out.println("StarTable: "+ starTable.dimension + " " + Arrays.toString(starTable.starTable.entrySet().toArray()));
         }
@@ -156,7 +156,7 @@ public class Main {
         CuboidTree.CuboidNode CC = null;
         Tree TC = null;
 
-        if (cnode.count >= min_sup) {
+        if (cnode.count >= min_iceberg) {
             if (!cnode.attribute.equalsIgnoreCase("+root") && logResults) {
                 // output cnode.count
                 List<String> attrAggregate = new ArrayList<String>();

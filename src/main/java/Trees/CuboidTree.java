@@ -46,7 +46,7 @@ public class CuboidTree {
 
                     node.children.add(childNode);
                     this.listOfNodes.add(new Tuple(combination.getVector()));
-                    System.out.println("Combiation: "+ combination.toString());
+                    System.out.println("CuboidTree add Combiation: "+ combination.toString());
                 }
             }
         }

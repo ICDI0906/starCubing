@@ -29,7 +29,7 @@ public class Table {
     }
 
     public int getCount(Tuple tup) {
-        return table.get(table.indexOf(tup)).getCount();
+        return table.get(table.indexOf(tup)).getTupleCount();
     }
 
     public void populate(CsVParser parser) {
@@ -52,7 +52,7 @@ public class Table {
             table.add(newRow);
             newRow.increment();//make count to 1
             
-            System.out.println("Tuple: " + newRow.tuple.toString() + "->" + newRow.getCount());
+            System.out.println("Tuple: " + newRow.tuple.toString() + ", count()->" + newRow.getTupleCount());
             // newRow.printHash();
         }
         System.out.println("Done baseCuboidTable (Ordered Tuples...)"); // Ordered tuples
@@ -83,7 +83,7 @@ public class Table {
         Set<TableTuple> uniqueSet = new HashSet<TableTuple>(table);
         List<TableTuple> newtable = new ArrayList<TableTuple>(uniqueSet);
         for (TableTuple tt : uniqueSet) {
-            newtable.get(newtable.indexOf(tt)).setCount(Collections.frequency(table, tt));
+            newtable.get(newtable.indexOf(tt)).setTupleCount(Collections.frequency(table, tt));
             System.out.println("Compressed tuple" + tt.tuple.tuplet);
         }
         return newtable;
