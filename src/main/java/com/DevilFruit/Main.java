@@ -28,6 +28,7 @@ public class Main {
         File csvFile = new File("data/BaseCuboid.csv");
         Instant start;
         System.out.println("Parsing " + csvFile.getName() + "...");
+        System.out.println("Creating baseCuboidTable " + "...");
         CsVParser myParser = new CsVParser(csvFile.getAbsolutePath());
         Table baseCuboidTable;
         baseCuboidTable = new Table();
@@ -50,11 +51,11 @@ public class Main {
             StarTable starTable = new StarTable(orderedDimen.get(i) /*baseCuboidTable.key.get(i)*/);
             starTable = baseCuboidTable.getStarTable(starTable.dimension, min_iceberg);
             starTables.add(starTable);
-            //System.out.println("StarTable: "+ starTable.dimension + " " + Arrays.toString(starTable.starTable.entrySet().toArray()));
+            // System.out.println("StarTable: "+ starTable.dimension + " " + Arrays.toString(starTable.starTable.entrySet().toArray()));
         }
-        
+        System.out.println("StarTables...");
         for (int i = 0; i < starTables.size(); i++) {
-            System.out.println("Star Table: " + starTables.get(i).dimension.toString());
+            System.out.println("\n Star Table: " + i);
             starTables.toString();
         }        
         System.out.println("Done");
@@ -67,7 +68,7 @@ public class Main {
         Table compressedBaseTable = new Table();
         compressedBaseTable.populate(myParser2);
 
-        compressedBaseTable.table = compressedBaseTable.compress(starTables);
+        compressedBaseTable.relationalTable = compressedBaseTable.compress(starTables);
 
         System.out.println("Done");
 
@@ -75,7 +76,7 @@ public class Main {
         System.out.print("Creating base star tree...");
         Tree baseStarTree = new Tree();
         baseStarTree.createStarTree(compressedBaseTable);
-        baseStarTree.root.count = baseCuboidTable.table.size();
+        baseStarTree.root.count = baseCuboidTable.relationalTable.size();
         System.out.println("root.count: " + baseStarTree.root.count );
         System.out.println("Done");
 

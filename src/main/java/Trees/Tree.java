@@ -18,15 +18,16 @@ public class Tree {
     }
     
     public void createStarTree(Table compressedBaseTable) {
+        // TODO print tree
         String attr = "";
         String dimen = "";
-        for (int i = 0; i < compressedBaseTable.table.size(); i++) {
+        for (int i = 0; i < compressedBaseTable.relationalTable.size(); i++) {
             Node ptr = root;
-            int rowCount = compressedBaseTable.table.get(i).getTupleCount();
+            int rowCount = compressedBaseTable.relationalTable.get(i).getTupleCount();
             root.count += rowCount;
 
             for (int j = 0; j < compressedBaseTable.key.size(); j++) {
-                attr = compressedBaseTable.table.get(i).tuple.get(j);
+                attr = compressedBaseTable.relationalTable.get(i).tuple.get(j);
                 dimen = compressedBaseTable.key.get(j);
                 Node temp = new Node();
                 temp.attribute = attr;

@@ -13,6 +13,7 @@ public class StarTable {
 
     @Override
     public String toString() {
+    System.out.println("Dimension: " + this.dimension );
     Iterator<Map.Entry<String, Integer>> entries = starTable.entrySet().iterator();
     while (entries.hasNext()) {
       Map.Entry<String, Integer> entry = entries.next();

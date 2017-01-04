@@ -8,28 +8,28 @@ import java.util.*;
  * Created by susha on 3/18/2016.
  */
 public class Table {
-    public List<TableTuple> table;
+    public List<TableTuple> relationalTable;
     public Tuple key;//has one extra column count
 
     public Table() {
-        table = new ArrayList<TableTuple>();
+        relationalTable = new ArrayList<TableTuple>();
         key = new Tuple();
     }
 
     public void add(Tuple tup) {
-        int index = table.indexOf(tup);
+        int index = relationalTable.indexOf(tup);
 
         if (index > 0) {
-            table.get(index).increment();
+            relationalTable.get(index).increment();
         } else {
             TableTuple newTT = new TableTuple(tup);
-            table.add(newTT);
+            relationalTable.add(newTT);
         }
 
     }
 
     public int getCount(Tuple tup) {
-        return table.get(table.indexOf(tup)).getTupleCount();
+        return relationalTable.get(relationalTable.indexOf(tup)).getTupleCount();
     }
 
     public void populate(CsVParser parser) {
@@ -49,7 +49,7 @@ public class Table {
         System.out.println("baseCuboidTable (Ordered Tuples...)"); // Ordered tuples
         while (parser.hasNext()) {
             TableTuple newRow = new TableTuple(parser.next(), sortHelper);
-            table.add(newRow);
+            relationalTable.add(newRow);
             newRow.increment();//make count to 1
             
             System.out.println("Tuple: " + newRow.tuple.toString() + ", count()->" + newRow.getTupleCount());
@@ -61,8 +61,8 @@ public class Table {
     public StarTable getStarTable(String dimension, int min_sup) {
         StarTable starTable = new StarTable(dimension);
         int index = key.indexOf(dimension);
-        for (int i = 0; i < table.size(); i++) {
-            starTable.insert(table.get(i).get(index));
+        for (int i = 0; i < relationalTable.size(); i++) {
+            starTable.insert(relationalTable.get(i).get(index));
         }
 
         starTable.validateStar(min_sup);
@@ -71,19 +71,19 @@ public class Table {
 
     public List<TableTuple> compress(List<StarTable> starTables) {
         //mark stars
-        for (int i = 0; i < table.size(); i++) {
+        for (int i = 0; i < relationalTable.size(); i++) {
             for (int j = 0; j < key.size(); j++) {
-                if (starTables.get(j).isStar(table.get(i).get(j))) {
-                    table.get(i).star(j, key.get(j));
+                if (starTables.get(j).isStar(relationalTable.get(i).get(j))) {
+                    relationalTable.get(i).star(j, key.get(j));
 
                 }
             }
         }
         //remove duplicate rows
-        Set<TableTuple> uniqueSet = new HashSet<TableTuple>(table);
+        Set<TableTuple> uniqueSet = new HashSet<TableTuple>(relationalTable);
         List<TableTuple> newtable = new ArrayList<TableTuple>(uniqueSet);
         for (TableTuple tt : uniqueSet) {
-            newtable.get(newtable.indexOf(tt)).setTupleCount(Collections.frequency(table, tt));
+            newtable.get(newtable.indexOf(tt)).setTupleCount(Collections.frequency(relationalTable, tt));
             System.out.println("Compressed tuple" + tt.tuple.tuplet);
         }
         return newtable;
