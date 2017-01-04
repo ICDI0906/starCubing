@@ -1,5 +1,11 @@
 package com.DevilFruit;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import static java.util.logging.Level.*;
+import java.util.logging.Logger;
+
 import Tables.StarTable;
 import Tables.Table;
 import Trees.CuboidTree;
@@ -15,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Main {
+    private static final Logger LOG = Logger.getLogger(Main.class.getName());
     public static int min_iceberg;
     /**
      * @param args contains information about the data being processed
@@ -24,22 +31,44 @@ public class Main {
     private static boolean logResults = true;
 
     public static void main(String[] args) {
+        // Set logger
+        Level[] levels = {
+            OFF, SEVERE, WARNING, INFO,
+            CONFIG, FINE, FINER, FINEST, ALL
+        };
+
+
+        Logger root = Logger.getLogger("");
+        // .level= ALL
+        root.setLevel(ALL);
+        for (Handler handler : root.getHandlers()) {
+            if (handler instanceof ConsoleHandler) {
+                // java.util.logging.ConsoleHandler.level = ALL
+                handler.setLevel(ALL);
+            }
+        }
+        LOG.setLevel(ALL);
+        //for (Level level : levels) {
+        //    LOG.setLevel(level);
+        //    LOG.log(level, "Hello Logger");
+        //}
+        
         // Parse CSV file and add to Table
         File csvFile = new File("data/BaseCuboid.csv");
         Instant start;
-        System.out.println("Parsing " + csvFile.getName() + "...");
-        System.out.println("Creating baseCuboidTable " + "...");
+        LOG.log(FINE,"Parsing " + csvFile.getName() + "...");
+        LOG.log(FINE,"Creating baseCuboidTable...");
         CsVParser myParser = new CsVParser(csvFile.getAbsolutePath());
         Table baseCuboidTable;
         baseCuboidTable = new Table();
         baseCuboidTable.populate(myParser);
-        System.out.println("Done");
-
+        
+        LOG.log(FINE,"...Done");
 
         //Perform star reduction to create a compressed base table
         //1. create a star table (hash table) for each dimension
         start = Instant.now();
-        System.out.println("Creating a list of startables by dimension...");
+        LOG.log(FINE,"Creating a list of startables by dimension...");
         List<StarTable> starTables = new ArrayList<StarTable>();
         min_iceberg = Integer.parseInt("2"); // args[1]
 
@@ -53,51 +82,54 @@ public class Main {
             starTables.add(starTable);
             // System.out.println("StarTable: "+ starTable.dimension + " " + Arrays.toString(starTable.starTable.entrySet().toArray()));
         }
-        System.out.println("StarTables...");
+        
+        LOG.log(FINE,"StarTables...");
         for (int i = 0; i < starTables.size(); i++) {
-            System.out.println("\n Star Table: " + i);
+            LOG.log(FINEST,"\"\\n Star Table: \" + i");
             starTables.toString();
         }        
-        System.out.println("Done");
+        LOG.log(FINE,"...Done");
 
 
         //2. Generate compressed star table
-        System.out.println("Compressing base table...");
+        LOG.log(FINE,"Compressing base table...");
         //scan table again TODO clone baseCuboidTable instead
         CsVParser myParser2 = new CsVParser(csvFile.getAbsolutePath());
         Table compressedBaseTable = new Table();
         compressedBaseTable.populate(myParser2);
 
         compressedBaseTable.relationalTable = compressedBaseTable.compress(starTables);
-
-        System.out.println("Done");
+        
+        LOG.log(FINE,"...Done");
 
         //Create base Star Tree
-        System.out.print("Creating base star tree...");
+        LOG.log(FINE,"Creating base star tree...");
         Tree baseStarTree = new Tree();
         baseStarTree.createStarTree(compressedBaseTable);
         baseStarTree.root.count = baseCuboidTable.relationalTable.size();
-        System.out.println("root.count: " + baseStarTree.root.count );
-        System.out.println("Done");
+        LOG.log(FINE,"root.count: " + baseStarTree.root.count);
+        
+        LOG.log(FINE,"...Done");
 
         //Create Cuboid Tree
-        System.out.println("Creating cuboidTree...");
+        LOG.log(FINE,"Creating cuboidTree...");
         CuboidTree cuboidTree = new CuboidTree(compressedBaseTable.key.tuplet);
 
         //linking the root node of cuboid tree to root of Base Star tree
         baseStarTree.cuboidTreeCuboidNode = cuboidTree.root;
         cuboidTree.root.starTree = baseStarTree;
 
-        System.out.println("Done");
+        LOG.log(FINE,"...Done");
         //call starcubing
-
-        System.out.println("Star Cubing...");
+        
+        LOG.log(FINE,"Star Cubing...");
         starCubing(baseStarTree, baseStarTree.root);
         Instant end = Instant.now();
-        System.out.println("Done: " + Duration.between(start, end));
-
-        System.out.println( "baseStartree: " + baseStarTree.cuboidTreeCuboidNode.toString());
         
+        LOG.log(FINE,"...Done");
+        LOG.log(FINE,"Elapsed Time: " + Duration.between(start, end));
+
+        LOG.log(FINE,"baseStartree: " + baseStarTree.cuboidTreeCuboidNode.toString());
     }
 
     /**
